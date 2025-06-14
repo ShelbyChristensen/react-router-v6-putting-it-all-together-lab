@@ -1,22 +1,22 @@
-import { useParams, useOutletContext } from "react-router-dom"
+import { useParams } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 
 function MovieCard() {
-  const { movieId } = useParams()
-  const { director } = useOutletContext()
+  const { movieId } = useParams();
+const director = useOutletContext();
 
-  if (!director) return <h2>Director not found.</h2>
+const movie = director?.movies?.find((m) => m.id === movieId);
 
-  const movie = director.movies.find((m) => m.id === movieId)
+if (!movie) return <p>Movie not found.</p>; // handles invalid movieId
 
-  if (!movie) return <h2>Movie not found.</h2>
+return (
+  <div>
+    <h3>{movie.title}</h3>
+    <p>Time: {movie.time} minutes</p>
+    <p>Genres: {movie.genres.join(', ')}</p>
+  </div>
+);
 
-  return (
-    <div>
-      <h2>{movie.title}</h2>
-      <p>Duration: {movie.time} minutes</p>
-      <p>{movie.genres.join(", ")}</p>
-    </div>
-  )
 }
 
-export default MovieCard
+export default MovieCard;

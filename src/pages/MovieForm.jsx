@@ -1,52 +1,34 @@
-import { useState } from "react"
-import { useParams, useNavigate, useOutletContext } from "react-router-dom"
-import { v4 as uuidv4 } from "uuid"
+import { useState } from 'react';
+import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
 
 function MovieForm() {
-  const [title, setTitle] = useState("")
-  const [time, setTime] = useState("")
-  const [genres, setGenres] = useState("")
+  const [title, setTitle] = useState('');
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const director = useOutletContext();
 
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const { director } = useOutletContext()
+  function handleSubmit(e) {
+    e.preventDefault();
+    const newMovie = { title, directorId: parseInt(id) };
 
-  if (!director) return <h2>Director not found.</h2>
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const newMovie = {
-      id: uuidv4(),
-      title,
-      time: parseInt(time),
-      genres: genres.split(",").map((g) => g.trim())
-    }
-
-    fetch(`http://localhost:4000/directors/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ movies: [...director.movies, newMovie] })
+    fetch('http://localhost:3000/movies', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newMovie),
     })
       .then((r) => r.json())
-      .then(() => {
-        navigate(`../movies/${newMovie.id}`)
-      })
-      .catch(console.log)
+      .then((savedMovie) => {
+        navigate(`/directors/${id}/movies/${savedMovie.id}`);
+      });
   }
 
   return (
-    <div>
-      <h2>Add New Movie</h2>
-      <form onSubmit={handleSubmit}>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
-        <input value={time} onChange={(e) => setTime(e.target.value)} placeholder="Duration" />
-        <input value={genres} onChange={(e) => setGenres(e.target.value)} placeholder="Genres" />
-        <button type="submit">Add Movie</button>
-      </form>
-    </div>
-  )
+    <form onSubmit={handleSubmit}>
+      <label>Movie Title:</label>
+      <input value={title} onChange={(e) => setTitle(e.target.value)} />
+      <button type="submit">Add Movie</button>
+    </form>
+  );
 }
 
-export default MovieForm
+export default MovieForm;

@@ -1,50 +1,34 @@
-import { useState } from "react"
-import { useNavigate, useOutletContext } from "react-router-dom"
+import { useState } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 function DirectorForm() {
-  const [name, setName] = useState("")
-  const [bio, setBio] = useState("")
-  const { directors, setDirectors } = useOutletContext()
-  const navigate = useNavigate()
+  const [name, setName] = useState('');
+  const { addDirector } = useOutletContext();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const newDirector = { name, bio, movies: [] }
+  function handleSubmit(e) {
+    e.preventDefault();
+    const newDirector = { name, movies: [] };
 
-    fetch("http://localhost:4000/directors", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    fetch('http://localhost:3000/directors', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newDirector),
     })
       .then((r) => r.json())
-      .then((data) => {
-        setDirectors([...directors, data])
-        navigate(`/directors/${data.id}`)
-      })
-      .catch(console.log)
+      .then((savedDirector) => {
+        addDirector(savedDirector);
+        navigate(`/directors/${savedDirector.id}`);
+      });
   }
 
   return (
-    <div>
-      <h2>Add New Director</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Director's Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <textarea
-          placeholder="Director's Bio"
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          required
-        />
-        <button type="submit">Add Director</button>
-      </form>
-    </div>
-  )
+    <form onSubmit={handleSubmit}>
+      <label>Director Name:</label>
+      <input value={name} onChange={(e) => setName(e.target.value)} />
+      <button type="submit">Add Director</button>
+    </form>
+  );
 }
 
-export default DirectorForm
+export default DirectorForm;

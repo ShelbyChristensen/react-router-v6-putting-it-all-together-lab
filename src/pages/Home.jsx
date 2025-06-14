@@ -3,7 +3,7 @@ import NavBar from "../components/NavBar"
 function Home() {
   return (
     <>
-      <NavBar />
+      
       <main>
         <h1>🎬 Welcome to the Movie Directory 🎥</h1>
         <p>
